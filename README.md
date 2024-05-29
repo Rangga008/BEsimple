@@ -63,4 +63,4 @@ Kami sangat menghargai kontribusi dari komunitas! Untuk berkontribusi ke proyek 
 
 ## Lisensi
 
-Tuliskan lisensi proyek Anda di sini. Contoh: MIT, Apache, dsb.
+By Rangga/Kuren
