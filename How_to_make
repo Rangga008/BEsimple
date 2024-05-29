@@ -1,0 +1,119 @@
+## Cara Pembuatan
+
+Berikut langkah-langkah untuk membuat proyek menggunakan Express dan Prisma:
+
+### Langkah 1: Persiapan Proyek
+
+1. Buatlah direktori proyek baru dan masuk ke dalamnya.
+
+    sh
+    mkdir my-express-prisma-project
+    cd my-express-prisma-project
+    
+
+2. Inisialisasikan proyek Node.js dengan menjalankan:
+
+    sh
+    npm init -y
+    
+
+3. Instal Express dan Prisma sebagai dependensi proyek:
+
+    sh
+    npm install express @prisma/client prisma
+    
+
+4. Inisialisasikan Prisma dengan menjalankan:
+
+    sh
+    npx prisma init
+    
+
+    Ini akan membuat folder prisma di dalam proyek Anda dan menghasilkan file schema.prisma di dalamnya.
+
+### Langkah 2: Migrasi Database
+
+1. Tentukan model-model yang dibutuhkan dalam skema Prisma. Contoh:
+
+    prisma
+    // prisma/schema.prisma
+
+    datasource db {
+      provider = "mysql"
+      url      = env("DATABASE_URL")
+    }
+
+    generator client {
+      provider = "prisma-client-js"
+    }
+
+    model User {
+      id    Int     @id @default(autoincrement())
+      name  String
+      email String  @unique
+    }
+    
+
+2. Jalankan migrasi database dengan perintah:
+
+    sh
+    npx prisma migrate dev --name init
+    
+
+    Ini akan membuat tabel-tabel yang sesuai dengan model yang didefinisikan dalam skema Prisma Anda di dalam database Anda.
+
+### Langkah 3: Pengaturan Server
+
+1. Buatlah file index.js dan tulis kode untuk inisiasi server Express:
+
+    javascript
+    // index.js
+
+    const express = require('express');
+    const { PrismaClient } = require('@prisma/client');
+
+    const prisma = new PrismaClient();
+    const app = express();
+
+    app.use(express.json());
+
+    // Routes
+    app.get('/users', async (req, res) => {
+      try {
+        const users = await prisma.user.findMany();
+        res.json(users);
+      } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+
+    app.post('/users', async (req, res) => {
+      const { name, email } = req.body;
+      try {
+        const newUser = await prisma.user.create({
+          data: { name, email },
+        });
+        res.status(201).json(newUser);
+      } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+
+    // Server
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+    
+
+### Langkah 4: Menjalankan Aplikasi
+
+1. Jalankan server dengan perintah:
+
+    sh
+    node index.js
+    
+
+2. Buka browser dan kunjungi http://localhost:3000/ untuk melihat proyek dijalankan.
+
+    
